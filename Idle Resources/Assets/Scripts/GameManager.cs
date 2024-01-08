@@ -34,9 +34,9 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        mapSizeX= 50;
+        mapSizeX = 50;
         mapSizeZ = 50;
-        
+
 
         // Create the starting resources
         for (int i = 0; i < startingResources; i++)
@@ -59,12 +59,12 @@ public class GameManager : MonoBehaviour
         // Create a harvester
         spawnHarvester();
 
-            GameObject.Find("HarvesterButton").GetComponentInChildren<TextMeshProUGUI>().text = "Buy Harvester\nHarvesters: "+ harvesters.ToString()+"\nWood: " + harvesterPrice.ToString();
-            GameObject.Find("TreeSpawnButton").GetComponentInChildren<TextMeshProUGUI>().text = "Tree Spawnrate\nCurrent rate: "+ spawnRate.ToString()+"\nWood: " + treeSpawnRatePrice.ToString();
-            GameObject.Find("HarvesterSpeedButton").GetComponentInChildren<TextMeshProUGUI>().text = "Harvester Speed\nCurrent speed: " + Mathf.Round((100f * 1.0f + 0.1f * (harvesterSpeedPrice - 10)) / 100f).ToString() + "\nWood: " + harvesterSpeedPrice.ToString();
-    
+        // Change the text of the button
+        updateButtons();
 
-        
+        StartCoroutine(Autoplay());
+
+
     }
 
     void spawnHarvester()
@@ -78,11 +78,11 @@ public class GameManager : MonoBehaviour
     {
         // Change the text of the text that shows the amount of wood
         GameObject.Find("AmountWood").GetComponent<TextMeshProUGUI>().text = "Wood: " + wood.ToString();
-        
+
     }
 
 
-// Create a tree every 5 seconds
+    // Create a tree every 5 seconds
     IEnumerator SpawnResource()
     {
 
@@ -104,38 +104,38 @@ public class GameManager : MonoBehaviour
 
         // Restart the coroutine
         StartCoroutine(SpawnResource());
-        
+
     }
-        
-      
 
 
-    
 
-private Vector3 getRandomPosition()
-{
-    Vector3 position;
 
-    do
+
+
+    private Vector3 getRandomPosition()
     {
-        // Generate a random position
-        position = new Vector3(Random.Range(-mapSizeX, mapSizeX), 0, Random.Range(-mapSizeZ, mapSizeZ));
-    }
-    while (position.x >= -10 && position.x <= 10 && position.z >= -10 && position.z <= 10);
+        Vector3 position;
 
-    return position;
-}
+        do
+        {
+            // Generate a random position
+            position = new Vector3(Random.Range(-mapSizeX, mapSizeX), 0, Random.Range(-mapSizeZ, mapSizeZ));
+        }
+        while (position.x >= -10 && position.x <= 10 && position.z >= -10 && position.z <= 10);
+
+        return position;
+    }
 
     public void buyHarvester()
     {
         if (wood >= harvesterPrice)
         {
             wood -= harvesterPrice;
-            harvesterPrice ++;
+            harvesterPrice++;
             spawnHarvester();
             // Change the text of the button to show the amount of harvesters
-            GameObject.Find("HarvesterButton").GetComponentInChildren<TextMeshProUGUI>().text = "Buy Harvester\nHarvesters: "+ harvesters.ToString()+"\nWood: " + harvesterPrice.ToString();
-
+            // Change the text of the button
+            updateButtons();
 
         }
     }
@@ -146,9 +146,10 @@ private Vector3 getRandomPosition()
         {
             wood -= treeSpawnRatePrice;
             spawnRate *= 0.9f;
-            treeSpawnRatePrice ++;
+            treeSpawnRatePrice++;
             // Change the text of the button
-                    GameObject.Find("TreeSpawnButton").GetComponentInChildren<TextMeshProUGUI>().text = "Tree Spawnrate\nCurrent rate: "+ spawnRate.ToString()+"\nWood: " + treeSpawnRatePrice.ToString();
+            // Change the text of the button
+            updateButtons();
         }
     }
 
@@ -157,24 +158,67 @@ private Vector3 getRandomPosition()
         if (wood >= harvesterSpeedPrice)
         {
             wood -= harvesterSpeedPrice;
-            harvesterSpeedPrice ++;
+            harvesterSpeedPrice++;
 
             // Change the text of the button
-GameObject.Find("HarvesterSpeedButton").GetComponentInChildren<TextMeshProUGUI>().text = "Harvester Speed\nCurrent speed: " + Mathf.Round((100f * 1.0f + 0.1f * (harvesterSpeedPrice - 10)) / 100f).ToString() + "\nWood: " + harvesterSpeedPrice.ToString();
-
+            updateButtons();
             // Change the speed of all harvesters
             GameObject[] harvesters = GameObject.FindGameObjectsWithTag("Harvester");
             foreach (GameObject harvester in harvesters)
             {
-                harvester.GetComponent<HarvesterManager>().increaseSpeed(0.1f);
+                harvester.GetComponent<HarvesterManager>().increaseSpeed(0.2f);
             }
-            
+
         }
+    }
+
+    IEnumerator Autoplay()
+    {
+
+        yield return new WaitForSeconds(3f);
+
+        // Increase tree spawn rate if possible and if there are more harvesters than trees (these need to be found from the scene)
+        if (wood >= treeSpawnRatePrice && harvesters > GameObject.FindGameObjectsWithTag("Tree").Length)
+        {
+            increaseTreeSpawnRate();
+        }
+
+        else if (wood >= harvesterPrice)
+        {
+            buyHarvester();
+            if (wood >= harvesterSpeedPrice)
+            {
+                increaseHarvesterSpeed();
+            }
+        }
+
+
+
+
+
+
+
+
+        StartCoroutine(Autoplay());
+
+
     }
 
     public void Unload(int amount)
     {
         wood += amount;
+    }
+
+    private void updateButtons()
+    {
+        // Change the text of the button to show the amount of harvesters
+        GameObject.Find("HarvesterButton").GetComponentInChildren<TextMeshProUGUI>().text = "Buy Harvester\nHarvesters: " + harvesters.ToString() + "\nWood: " + harvesterPrice.ToString();
+
+        // Change the text of the button
+        GameObject.Find("TreeSpawnButton").GetComponentInChildren<TextMeshProUGUI>().text = "Tree Spawnrate\nCurrent rate: " + spawnRate.ToString() + "\nWood: " + treeSpawnRatePrice.ToString();
+
+        // Change the text of the button
+        GameObject.Find("HarvesterSpeedButton").GetComponentInChildren<TextMeshProUGUI>().text = "Harvester Speed\nWood: " + harvesterSpeedPrice.ToString();
     }
 
 }

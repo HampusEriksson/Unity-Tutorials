@@ -7,7 +7,7 @@ public class HarvesterManager : MonoBehaviour
     private GameObject house;
     private string currentTask = "Gathering";
     private GameObject gameManager;
-  
+
 
     private Dictionary<string, int> inventory = new Dictionary<string, int>();
 
@@ -23,7 +23,7 @@ public class HarvesterManager : MonoBehaviour
         house = GameObject.Find("House");
         gameManager = GameObject.Find("Game Manager");
         inventory.Add("Wood", 0);
-        
+
     }
 
     // Update is called once per frame
@@ -32,32 +32,32 @@ public class HarvesterManager : MonoBehaviour
 
         // If gathering, rotate towards the nearest resource
         if (currentTask == "Gathering")
-{
-    // Find the nearest resource
-    GameObject[] resources = GameObject.FindGameObjectsWithTag("Tree");
-    GameObject nearestResource = null;
-    float distance = Mathf.Infinity;
-
-    foreach (GameObject resource in resources)
-    {
-        float currentDistance = Vector3.Distance(transform.position, resource.transform.position);
-        if (currentDistance < distance)
         {
-            distance = currentDistance;
-            nearestResource = resource;
-        }
-    }
+            // Find the nearest resource
+            GameObject[] resources = GameObject.FindGameObjectsWithTag("Tree");
+            GameObject nearestResource = null;
+            float distance = Mathf.Infinity;
 
-    // Rotate towards the nearest resource (if found)
-    if (nearestResource != null)
-    {
-        LookAtGameObject(nearestResource);
-    }
-    else
-    {
-        Debug.LogWarning("No nearest resource found.");
-    }
-}
+            foreach (GameObject resource in resources)
+            {
+                float currentDistance = Vector3.Distance(transform.position, resource.transform.position);
+                if (currentDistance < distance)
+                {
+                    distance = currentDistance;
+                    nearestResource = resource;
+                }
+            }
+
+            // Rotate towards the nearest resource (if found)
+            if (nearestResource != null)
+            {
+                LookAtGameObject(nearestResource);
+            }
+            else
+            {
+                Debug.LogWarning("No nearest resource found.");
+            }
+        }
 
         // Move forward
 
@@ -66,59 +66,66 @@ public class HarvesterManager : MonoBehaviour
             transform.Translate(Vector3.forward * Time.deltaTime * speed);
         }
 
-        
+
     }
 
-private void OnTriggerEnter(Collider other)
-{
-    if (other.gameObject.CompareTag("Tree") && currentTask == "Gathering")
+    private void OnTriggerEnter(Collider other)
     {
-        currentTask = "Harvesting";
-        
-        // Harvest the resource
-        StartCoroutine(HarvestResource(other.gameObject));
-    }
-    else if (other.gameObject.CompareTag("House")  && currentTask == "Returning")
-    {
-        // If the harvester is returning, unload the resources
-        gameManager.GetComponent<GameManager>().Unload(inventory["Wood"]);
-        inventory["Wood"] = 0;
-        changeTask("Gathering");
-    }
-}
-
-private IEnumerator HarvestResource(GameObject resource)
-{
-    
-    while (currentTask == "Harvesting" && resource != null)
-    {
-        // Harvest the resource
-        bool harvested = resource.GetComponent<Resource>().harvest();
-
-        // If the resource was harvested
-        if (harvested)
+        if (other.gameObject.CompareTag("Tree") && currentTask == "Gathering")
         {
-            inventory["Wood"]++;
+            currentTask = "Harvesting";
 
-            // Delay for 1 second
-            yield return new WaitForSeconds(1.0f);
+            // Harvest the resource
+            StartCoroutine(HarvestResource(other.gameObject));
+        }
+        else if (other.gameObject.CompareTag("House") && currentTask == "Returning")
+        {
+            // If the harvester is returning, unload the resources
+            gameManager.GetComponent<GameManager>().Unload(inventory["Wood"]);
+            inventory["Wood"] = 0;
+            changeTask("Gathering");
+        }
+    }
 
-            // If the sum of the inventory is greater than 5, move back to the house
-            if (inventory["Wood"] >= 5)
+    private IEnumerator HarvestResource(GameObject resource)
+    {
+
+        while (currentTask == "Harvesting" && resource != null)
+        {
+            // Harvest the resource
+            bool harvested = resource.GetComponent<Resource>().harvest();
+
+            // If the resource was harvested
+            if (harvested)
             {
-                changeTask("Returning");
-            }else if (resource == null)
+                inventory["Wood"]++;
+
+                // Delay for 1 second
+                yield return new WaitForSeconds(1.0f);
+
+                // If the sum of the inventory is greater than 5, move back to the house
+                if (inventory["Wood"] >= 5)
+                {
+                    changeTask("Returning");
+                }
+                else if (resource == null)
+                {
+                    changeTask("Gathering");
+                }
+            }
+            else
             {
+                // If the resource was not harvested, break the loop
                 changeTask("Gathering");
             }
+
+            yield return null; // Yielding null allows the coroutine to continue in the next frame
         }
-
-        yield return null; // Yielding null allows the coroutine to continue in the next frame
     }
-}
 
 
-    void LookAtGameObject(GameObject target){
+    void LookAtGameObject(GameObject target)
+    {
         // Get the direction towards the house in 2D (XZ plane)
         Vector3 direction = target.transform.position - transform.position;
         direction.y = 0; // Set the Y component to zero to keep it in the XZ plane
@@ -136,7 +143,7 @@ private IEnumerator HarvestResource(GameObject resource)
         transform.rotation = targetRotation;
     }
 
-      IEnumerator DelayedAction(float delayTime)
+    IEnumerator DelayedAction(float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
     }
@@ -148,7 +155,7 @@ private IEnumerator HarvestResource(GameObject resource)
         {
             LookAtGameObject(house);
         }
-        
+
     }
 
     public void increaseSpeed(float increase)

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8903492464231620875}
   m_Layer: 0
   m_Name: Harvester
-  m_TagString: Undefined
+  m_TagString: Harvester
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
