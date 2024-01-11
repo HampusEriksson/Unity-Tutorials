@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject tile;
     private int batin = 20;
 
-   // List of possible towers
+    // List of possible towers
     public GameObject[] towers;
     private int activeTower = 0;
 
@@ -19,11 +19,11 @@ public class GameManager : MonoBehaviour
 
     private int level = 1;
 
-private List<List<char>> grid;
+    private List<List<char>> grid;
 
-public GameObject stone;
+    public GameObject stone;
 
-public GameObject monster;
+    public GameObject monster;
 
 
 
@@ -39,7 +39,7 @@ public GameObject monster;
             {
                 // Create the tile with name Tile(i,0,j)
                 GameObject newTile = Instantiate(tile, new Vector3(x, 0, z), Quaternion.identity);
-                newTile.name = "Tile(" + x +"," + z + ")";
+                newTile.name = "Tile(" + x + "," + z + ")";
 
                 // If the grid is an X, create a tower
                 if (grid[x][z] == 'X')
@@ -50,10 +50,10 @@ public GameObject monster;
         }
 
         spawnWave();
-        
 
-        
-        
+
+
+
     }
 
     // Update is called once per frame
@@ -76,13 +76,15 @@ public GameObject monster;
         UpdateGUI();
 
 
-        
-        
+
+
     }
 
-void setupGrid()
-{
-    grid = new List<List<char>>
+
+
+    void setupGrid()
+    {
+        grid = new List<List<char>>
     {
         new List<char> { 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'O', 'X' },
         new List<char> { 'X', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'X' },
@@ -93,7 +95,7 @@ void setupGrid()
         new List<char> { 'X', 'O', 'X', 'X', 'X', 'X', 'X', 'X', 'X' },
     };
 
-}
+    }
     // Change text to show active tower
     void UpdateGUI()
     {
@@ -118,12 +120,26 @@ void setupGrid()
         // Spawn 5 monsters with a delay of 1 second inbetween
         for (int i = 0; i < 5; i++)
         {
-            Invoke("spawnMonster", 1.5f*i);
+            Invoke("spawnMonster", 1.5f * i);
         }
     }
 
     void spawnMonster()
     {
-        Instantiate(monster, new Vector3(-1, 0.5f, 7), Quaternion.identity);
+        Instantiate(monster, new Vector3(-1, 0, 7), Quaternion.identity);
     }
+
+    public bool spendBatin(int amount)
+    {
+        if (batin >= amount)
+        {
+            batin -= amount;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
 }
