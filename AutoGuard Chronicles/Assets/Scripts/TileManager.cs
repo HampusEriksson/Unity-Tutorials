@@ -5,13 +5,12 @@ using UnityEngine;
 public class TileManager : MonoBehaviour
 {
 
-    private GameObject content;
     private GameManager gameManager;
 
 
     void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         
     }
 
@@ -22,8 +21,5 @@ public class TileManager : MonoBehaviour
     }
 
     // Do something when the tile is clicked
-    void OnMouseDown()
-    {
-       content = Instantiate(gameManager.getActiveTower(), transform.position, Quaternion.identity);
-    }
+
 }
