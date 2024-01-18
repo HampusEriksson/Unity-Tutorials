@@ -20,6 +20,7 @@ public class TowerManager : MonoBehaviour
     [Tooltip("The fire rate of the tower")]
     public float fireRate;
 
+
     private float fireCountdown = 0f;
 
     public GameObject bulletPrefab;
@@ -62,28 +63,34 @@ public class TowerManager : MonoBehaviour
 
         if (fireCountdown <= 0f)
         {
-            shoot();
-            fireCountdown = 1f / fireRate;
+            if(shoot()){
+                fireCountdown = 1f / fireRate;
+            };
+            
         }
 
         fireCountdown -= Time.deltaTime;
 
     }
 
-    private void shoot()
+    private bool shoot()
     {
-        GameObject bulletGO = Instantiate(bulletPrefab, transform.position, bulletPrefab.transform.rotation);
+        GameObject closestMonster = getClosestMonster();
+        if (closestMonster != null)
+        {
+            GameObject bulletGO = Instantiate(bulletPrefab, transform.position, bulletPrefab.transform.rotation);
         BulletManager bullet = bulletGO.GetComponent<BulletManager>();
 
         if (bullet != null)
         {
             bullet.damage = damage;
-            GameObject closestMonster = getClosestMonster();
-            bullet.setTarget(closestMonster.transform.position);
+            bullet.setTarget(closestMonster);
         }
+        return true;
+        }
+        return false;
+        
     }
-
-
 
     private GameObject getClosestMonster()
     {
@@ -93,7 +100,7 @@ public class TowerManager : MonoBehaviour
 
         foreach (GameObject monster in monsters)
         {
-            float distance = Vector3.Distance(transform.position, monster.transform.position);
+            float distance = Vector3.Distance( monster.transform.position, transform.position);
             if (distance < closestDistance)
             {
                 closestDistance = distance;

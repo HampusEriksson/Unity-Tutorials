@@ -58,4 +58,15 @@ public class MonsterManager : MonoBehaviour
         path.Add(new Vector3(5, 1, 1));
         path.Add(new Vector3(6, 1, 1));
     }
+
+    // Take damage
+    public void takeDamage(int damage)
+    {
+        hp -= damage;
+        if (hp <= 0)
+        {
+            Destroy(gameObject);
+            gameManager.addBatin(10);
+        }
+    }
 }

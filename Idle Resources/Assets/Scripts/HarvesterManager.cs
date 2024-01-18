@@ -13,6 +13,8 @@ public class HarvesterManager : MonoBehaviour
 
     private float speed = 5f;
 
+    private float harvestStartTime = 0f;
+
 
 
 
@@ -66,6 +68,16 @@ public class HarvesterManager : MonoBehaviour
             transform.Translate(Vector3.forward * Time.deltaTime * speed);
         }
 
+        if (currentTask == "Harvesting")
+        {
+            if (Time.time - harvestStartTime > 5.0f)
+            {
+                changeTask("Returning");
+            }
+
+
+        }
+
 
     }
 
@@ -74,6 +86,7 @@ public class HarvesterManager : MonoBehaviour
         if (other.gameObject.CompareTag("Tree") && currentTask == "Gathering")
         {
             currentTask = "Harvesting";
+            harvestStartTime = Time.time;
 
             // Harvest the resource
             StartCoroutine(HarvestResource(other.gameObject));
@@ -94,7 +107,7 @@ public class HarvesterManager : MonoBehaviour
         {
             // Harvest the resource
             bool harvested = resource.GetComponent<Resource>().harvest();
-
+            harvestStartTime = Time.time;
             // If the resource was harvested
             if (harvested)
             {

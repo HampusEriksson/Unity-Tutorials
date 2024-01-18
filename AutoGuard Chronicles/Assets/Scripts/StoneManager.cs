@@ -23,12 +23,17 @@ public class StoneManager : MonoBehaviour
 
         void OnMouseDown()
     {
-        destroyContent();
         // Create the tower on the stone (the y value needs to be above the stone )
-               content = Instantiate(gameManager.getActiveTower(), new Vector3(transform.position.x, transform.position.y+0.5f, transform.position.z), Quaternion.identity);
+        if (content == null)
+        {
+            gameManager.spawnTower(new Vector3(transform.position.x, transform.position.y+0.5f, transform.position.z));
+        }
 
 
     }
+
+
+    
 
     // Destroy the content of the tile
     void destroyContent()

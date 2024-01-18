@@ -51,9 +51,6 @@ public class GameManager : MonoBehaviour
 
         spawnWave();
 
-
-
-
     }
 
     // Update is called once per frame
@@ -75,12 +72,15 @@ public class GameManager : MonoBehaviour
 
         UpdateGUI();
 
-
+    // Spawn more monsters if there are none left
+    if (GameObject.FindGameObjectsWithTag("Monster").Length == 0)
+    {
+        level++;
+        spawnWave();    
 
 
     }
-
-
+    }
 
     void setupGrid()
     {
@@ -101,9 +101,8 @@ public class GameManager : MonoBehaviour
     {
         // activeTowerText.GetComponent<TextMeshProUGUI>().text = "Active Tower: " + towers[activeTower].name;
         GameObject.Find("ActiveTowerText").GetComponent<TextMeshProUGUI>().text = "Active Tower: " + towers[activeTower].name;
-
+        GameObject.Find("BatinText").GetComponent<TextMeshProUGUI>().text = "Batin: " + batin;
     }
-
 
     public GameObject getActiveTower()
     {
@@ -142,4 +141,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void addBatin(int amount)
+    {
+        batin += amount;
+    }
+
+    public void spawnTower(Vector3 position)
+    {
+        if (spendBatin(towers[activeTower].GetComponent<TowerManager>().cost))
+        {
+            Instantiate(towers[activeTower], position, Quaternion.identity);
+        }
+    }
 }

@@ -9,6 +9,8 @@ public class BulletManager : MonoBehaviour
     public int damage = 0;
 
     public Vector3 direction;
+
+    private GameObject target;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,8 +20,15 @@ public class BulletManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        transform.Translate(direction * speed * Time.deltaTime);
+        // Move towards the target
+        if (target != null)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, target.transform.position, speed * Time.deltaTime);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
 
     }
 
@@ -27,21 +36,20 @@ public class BulletManager : MonoBehaviour
     {
         if (other.tag == "Monster")
         {
-            Destroy(gameObject);
+            MonsterManager monster = other.GetComponent<MonsterManager>();
+            monster.takeDamage(damage);
         }
     }
 
-    public void setTarget(Vector3 target)
+    public void setTarget(GameObject newtarget)
     {
-        direction = target - transform.position;
-        direction.Normalize();
-        // Look at the target
-        Vector3 lookAt = target - transform.position;
-        lookAt.y = 0;
-        Quaternion rotation = Quaternion.LookRotation(lookAt);
-        transform.rotation = rotation;
+
+        target = newtarget;
+        
 
     }
+
+
 
 
 
